@@ -27,8 +27,8 @@ using the database-environment <a href="https://www.mysql.com/">MySQL</a> for sa
 <ol>
   <li>Creating a GUI for the app using HTML and CSS.</li>
   <li>Connecting the server to the client for text-communication using socket.io</li>
-  <li>Connection with a MySQL-Database for chat history storage</li>
-  <li>Adding accounts + account storage in the Database</li>
+  <li>Adding accounts</li>
+  <li>Connection with a MySQL-Database for chat history and account storage</li>
   <li>Updating GUI to display contacts (accounts).</li>
   <li>Integrating special texting-features (eg. bold-text, emojis, pictures).</li>
   <li>Bonus: Add Video-Calls.</li>
