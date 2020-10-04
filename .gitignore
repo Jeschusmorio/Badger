@@ -1,2 +1,3 @@
 *.docx
 *.tmp
+site/node_modules/
