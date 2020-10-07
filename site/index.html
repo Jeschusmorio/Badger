@@ -3,100 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="css/style.css" rel="stylesheet"/>
     <title>Badger</title>
 </head>
-<body>
-    <div class="column userColumn">
-        <div class="ownProfile profile">
-            <img src="img/user.png" height="40px" width="40px" style="float: left;">
-            <p>Mario Petrovic</p>
-        </div>
-        <div class="contacts">
-            <div class="profile" onclick="openProfileChat()">
-                <img src="img/user.png" height="40px" width="40px" style="float: left;">
-                <p>Dummy</p>
+<body style="background-color: lightgrey;">
+    <!--Container mit 1 row-->
+    <div class="container-fluid vertical-center">
+        <div class="row panel">
+            <!--UserColumn mit eigener User, Kontakten und Settings-->
+            <div class="col-md-3 bg-secondary" style="border-style: solid; border-radius: 5px; border-color: black;">
+                <!--Eigener User-->
+                <div class="row" style="border-bottom: solid; border-color: black;">
+                    <p>Mario Petrovic</p>
+                </div>
+                <!--Contacts-->
+                <div class="row constant-height" style="overflow-y: scroll;">
+                    
+                </div>
+                <!--Settings-->
+                <div class="row justify-content-between" style="border-top: solid; border-color: black;">
+                    <img src="img/addFriend.png" height="35px" width="35px">
+                    <img src="img/removeFriend.png" height="35px" width="35px">
+                    <a href="settings.html">
+                        <img src="img/settings.png" height="35px" width="35px">
+                    </a>
+                </div>
             </div>
-            <div class="profile" onclick="openProfileChat()">
-                <img src="img/user.png" height="40px" width="40px" style="float: left;">
-                <p>Dummy</p>
-            </div>
-            <div class="profile" onclick="openProfileChat()">
-                <img src="img/user.png" height="40px" width="40px" style="float: left;">
-                <p>Dummy</p>
-            </div>
-            <div class="profile" onclick="openProfileChat()">
-                <img src="img/user.png" height="40px" width="40px" style="float: left;">
-                <p>Dummy</p>
-            </div>
-            <div class="profile" onclick="openProfileChat()">
-                <img src="img/user.png" height="40px" width="40px" style="float: left;">
-                <p>Dummy</p>
-            </div>
-            <div class="profile" onclick="openProfileChat()">
-                <img src="img/user.png" height="40px" width="40px" style="float: left;">
-                <p>Dummy</p>
-            </div>
-            <div class="profile" onclick="openProfileChat()">
-                <img src="img/user.png" height="40px" width="40px" style="float: left;">
-                <p>Dummy</p>
-            </div>
-            <div class="profile" onclick="openProfileChat()">
-                <img src="img/user.png" height="40px" width="40px" style="float: left;">
-                <p>Dummy</p>
-            </div>
-            <div class="profile" onclick="openProfileChat()">
-                <img src="img/user.png" height="40px" width="40px" style="float: left;">
-                <p>Dummy</p>
-            </div>
-            <div class="profile" onclick="openProfileChat()">
-                <img src="img/user.png" height="40px" width="40px" style="float: left;">
-                <p>Dummy</p>
-            </div>
-            <div class="profile" onclick="openProfileChat()">
-                <img src="img/user.png" height="40px" width="40px" style="float: left;">
-                <p>Dummy</p>
-            </div>
-            <div class="profile" onclick="openProfileChat()">
-                <img src="img/user.png" height="40px" width="40px" style="float: left;">
-                <p>Dummy</p>
-            </div>
-            <div class="profile" onclick="openProfileChat()">
-                <img src="img/user.png" height="40px" width="40px" style="float: left;">
-                <p>Dummy</p>
-            </div>
-            <div class="profile" onclick="openProfileChat()">
-                <img src="img/user.png" height="40px" width="40px" style="float: left;">
-                <p>Dummy</p>
-            </div>
-            <div class="profile" onclick="openProfileChat()">
-                <img src="img/user.png" height="40px" width="40px" style="float: left;">
-                <p>Dummy</p>
-            </div>
-            <div class="profile" onclick="openProfileChat()">
-                <img src="img/user.png" height="40px" width="40px" style="float: left;">
-                <p>Dummy</p>
+            <!--ChatColumn mit User, Messages und Textbar-->
+            <div class="col-md-9 bg-secondary" style="border-style: solid; border-radius: 5px; border-color: black;">
+                <!--Schreibpartner-->
+                <div class="row" style="border-bottom: solid; border-color: black;">
+                    <p>Dummy</p>
+                </div>
+                <!--Nachrichten-->
+                <div class="row bg-light constant-height" style="overflow-y: scroll;">
+                    
+                </div>
+                <!--Textfeld-->
+                <div class="row bg-light" style="border-top: solid; border-color: black;">
+                    <!--InputGroup = extension von form (hier: mit textfeld und button)-->
+                    <div class="input-group">
+						<input type="text" class="form-control" placeholder="Send a message..." aria-label="Search" aria-describedby="basic-addon2">
+						<div class="input-group-append">
+							<button class="btn btn-outline-secondary" type="button">Send</button>
+						</div>
+					</div>
+                </div>
             </div>
         </div>
-        <div class="settings">
-            <img src="img/addFriend.png" height="60px" width="60px">
-            <img src="img/removeFriend.png" height="60px" width="60px">
-            <a href="settings.html">
-                <img src="img/settings.png" height="60px" width="60px" style="float: right;">
-            </a>
-        </div>
-    </div>
-    <div class="column messageBox">
-        <div class="partner profile">
-            <img src="img/user.png" height="40px" width="40px" style="float: left;">
-            <p>Dummy</p>
-        </div>
-        <ul id="messages"></ul>
-        <form>
-            <input type="text" id="currentMessage"/>
-            <button id="sendMessage">Send</button>
-        </form>
     </div>
     <script src="index.js"></script>
+    <script src="https://code.jquery.com/jquery.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
 </body>
 </html>
