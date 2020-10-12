@@ -1,26 +1,17 @@
-// Load HTTP module
-const http = require("http");
-const { dirname } = require("path");
+const express = require('express'); //NodeJS-Methode -> ladet express-Modul in die Datei
+const app = express(); //erstellt eine express-Application (Objekt)
+const http = require('http').createServer(app);
+const port = 3000;
+const path = require('path'); //leichtes Joinen von Dateipfaden
 
-const hostname = "127.0.0.1";
-const port = 8000;
+app.use(express.static(path.join(__dirname, '..\\'))); //ermöglicht das Verwenden von Dateien aus dem Überverzeichnis (site) -> so ziemlich alle Dateien
 
-// Create HTTP server 
-const server = http.createServer((req, res) => {
+//HTTP-Get Methode fordert Daten vom Server an (Parameter: Dateipfad und Callback-Methode)
+app.get('/', (req, res) => {
+   res.sendFile(path.join(__dirname, '..\\index.html')) //res.send -> sendet HTTP-Response (z.B.: HTML mit sendFile)
+ });
 
-   // Set the response HTTP header with HTTP status and Content type
-   res.writeHead(200, {'Content-Type': 'text/plain'});
-   
-   // Send the response body "Hello World"
-   res.end('Hello World!');
-});
-
-// Prints a log once the server starts listening
-server.listen(port, hostname, () => {
-   console.log(`Server running at http://${hostname}:${port}/`);
-})
-
-function openProfileChat() {
-    
-}
-
+ //startet Server-listening für connections auf dem Port und führt Methode aus
+ http.listen(port, () => {
+   console.log(`Example app listening at http://localhost:${port}`)
+ });
