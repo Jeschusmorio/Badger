@@ -44,24 +44,40 @@
                 </div>
                 <!--Nachrichten-->
                 <div class="row bg-light constant-height" style="overflow-y: scroll;">
-                    
+                    <ul id="chat-messages"></ul>
                 </div>
-                <!--Textfeld-->
-                <div class="row bg-light" style="border-top: solid; border-color: black;">
-                    <!--InputGroup = extension von form (hier: mit textfeld und button)-->
-                    <div class="input-group">
-						<input type="text" class="form-control" placeholder="Send a message..." aria-label="Search" aria-describedby="basic-addon2">
-						<div class="input-group-append">
-							<button class="btn btn-outline-secondary" type="button">Send</button>
-						</div>
-					</div>
-                </div>
+                <form action="">
+                    <!--Textfeld-->
+                    <div class="row bg-light" style="border-top: solid; border-color: black;">
+                        <!--InputGroup = extension von form (hier: mit textfeld und button)-->
+                        <div class="input-group">
+				    	    <input id="message" type="text" class="form-control" placeholder="Send a message..." aria-label="message" aria-describedby="button-addon2">
+				    	    <div class="input-group-append">
+				    		    <button class="btn btn-outline-secondary" type="submit">Send</button>
+				    	    </div>
+				    	</div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-    <script src="js/index.js"></script>
     <script src="https://code.jquery.com/jquery.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-	<script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <!--Client Library für socket.io-->
+    <script src="node_modules/socket.io-client/dist/socket.io.js"></script>
+    <script>
+        //$ -> JQuery; $function -> die Funktion wird ausgeführt sobald alle Elemente geladen sind
+        //JQuery-Syntax: $(Selector).function()
+        $(function () {
+            var socket = io();
+            //EventHandler, wenn der Text der Form submitted wird
+            $('form').submit(function(eventHandler) {
+                eventHandler.preventDefault(); //Reload der Seite wird verhindert
+                socket.emit('chat-message', $('#message').val()); //ruft das Event 'chat-message' auf und sendet als Parameter die Nachricht
+                $('#message').val(''); //das Textfeld wird entleert
+            });
+        });
+    </script>
 </body>
 </html>
