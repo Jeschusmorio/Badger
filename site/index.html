@@ -43,7 +43,7 @@
                     </div>
                 </div>
                 <!--Nachrichten-->
-                <div class="row bg-light constant-height" style="overflow-y: scroll;">
+                <div id="message-box" class="row bg-light constant-height" style="overflow-y: scroll;">
                     <ul id="chat-messages"></ul>
                 </div>
                 <form action="">
@@ -61,6 +61,7 @@
             </div>
         </div>
     </div>
+    <script src="js/index.js"></script>
     <script src="https://code.jquery.com/jquery.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -74,8 +75,17 @@
             //EventHandler, wenn der Text der Form submitted wird
             $('form').submit(function(eventHandler) {
                 eventHandler.preventDefault(); //Reload der Seite wird verhindert
-                socket.emit('chat-message', $('#message').val()); //ruft das Event 'chat-message' auf und sendet als Parameter die Nachricht
-                $('#message').val(''); //das Textfeld wird entleert
+                let message = $('#message').val();
+                if (message != '') {
+                    //ruft das Event 'chat-message' beim Server auf und sendet als Parameter die Nachricht
+                    socket.emit('chat-message', message); 
+                    $('#message').val(''); //das Textfeld wird entleert
+                }
+            });
+            socket.on('chat-message', (message) => {
+                $('#chat-messages').append('<li>' + message + '</li>');
+                //console.log($('#message-box')[0].scrollHeight);
+                //$('#message-box').scrollTop($('#message-box')[0].scrollHeight);
             });
         });
     </script>

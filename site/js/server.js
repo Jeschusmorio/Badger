@@ -1,7 +1,7 @@
 const express = require('express'); //NodeJS-Methode -> ladet express-Modul in die Datei
 const app = express(); //erstellt eine express-Application (Objekt)
 const http = require('http').createServer(app);
-const port = 3000;
+const port = 80; //Standard HTTP Port
 const path = require('path'); //leichtes Joinen von Dateipfaden
 const socketio = require('socket.io'); //NodeJS HTTP Server Socket.io
 const io = socketio(http);
@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
 });
 
 //on() -> EventHandler; connect -> Event; Callback-Methode
-//wird ausgeführt, wenn eine Socket.io-Connection aufgebaut wird (socket -> Client-Socket)
+//wird ausgeführt, wenn eine Socket.io-Connection aufgebaut wird (socket -> repräsentiert die aktuelle Socket Verbindung zum Client)
 io.on('connect', (socket) => {
   console.log('New user connected!');
 
@@ -24,8 +24,9 @@ io.on('connect', (socket) => {
   });
 
   //wird ausgeführt, wenn ein user eine Nachricht sendet
+  //leitet die Nachricht an alle verbundenen Sockets weiter (auch an den der sie sendet)
   socket.on('chat-message', (message) => {
-    console.log('Message: ' + message);
+    io.emit('chat-message', message);
   });
 });
 
