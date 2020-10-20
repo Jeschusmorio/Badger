@@ -84,8 +84,10 @@
             });
             socket.on('chat-message', (message) => {
                 $('#chat-messages').append('<li>' + message + '</li>');
-                //console.log($('#message-box')[0].scrollHeight);
-                //$('#message-box').scrollTop($('#message-box')[0].scrollHeight);
+                //JQuery.scrollTop(pxl) -> ändert Position der Scrollbar um die angegebene Pixelzahl nach unten
+                //[0] -> wählt das DOM-Element aus (Document Object Model)
+                //JS.scrollHeight -> liefert die tatsächliche Höhe der Elemente in der Scrollbar (auch unsichtbaren Content)
+                $('#message-box').scrollTop($('#message-box')[0].scrollHeight); //falls neue Nachrichten kommen, ist die Scrollbar ganz unten
             });
         });
     </script>
