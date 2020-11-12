@@ -5,6 +5,23 @@ const port = 80; //Standard HTTP Port
 const path = require('path'); //leichtes Joinen von Dateipfaden
 const socketio = require('socket.io'); //NodeJS HTTP Server Socket.io
 const io = socketio(http);
+const mysql = require('mysql');
+const dbcon = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "root",
+    database: "badger"
+})
+
+dbcon.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected to Database!");
+    var sql = "SHOW TABLES;";
+    dbcon.query(sql, function (err, result) {
+        if (err) throw err;
+        console.log(result);
+    })
+})
 
 app.use(express.static(path.join(__dirname, '..\\'))); //ermöglicht das Verwenden von Dateien aus dem Überverzeichnis (site) -> so ziemlich alle Dateien
 
