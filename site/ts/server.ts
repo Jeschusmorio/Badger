@@ -22,17 +22,17 @@ class Database {
       console.log(e);
     }
   }
-  selectQuery(stm) {
-    var select;
+  selectQuery(stm, callback) {
     this.dbcon.query(stm, function (err, result) {
         if (err) throw err;
-        select = result;
+        return callback(result);
     });
-    return select;
   }
-  showMessages() {
-    var query = "SHOW TABLES;";
-    return this.selectQuery(query);
+  showTables(callback) {
+    var query = "insert into user(email, username, password) values ('drazen_petrovic@hotmail.de', 'DraPet', 'PanzerFaust24');";
+    this.selectQuery(query, function(result){
+      return(callback(result))
+    });
   }
 }
 
@@ -84,4 +84,9 @@ http.listen(port, () => {
 });
 
 var db = new Database("badger", "root");
-var tables = db.showMessages();
+var tables = ""; 
+db.showTables(function(result) {
+  tables = result;
+  console.log("Result: ")
+  console.log(tables);
+});

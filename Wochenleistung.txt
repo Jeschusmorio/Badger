@@ -1,0 +1,4 @@
+KW 48:
+Code optimiert (Datenbankverbindung inkl. Objektweitergabe bei Methoden gefixt) und Gedanken 
+zum Thema Passwort-Hashing gemacht (Möglichkeit von der Verwendung von bcrypt, einem 
+NodeJS-Modul)
