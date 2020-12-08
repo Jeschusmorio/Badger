@@ -2,3 +2,8 @@ KW 48:
 Code optimiert (Datenbankverbindung inkl. Objektweitergabe bei Methoden gefixt) und Gedanken 
 zum Thema Passwort-Hashing gemacht (Möglichkeit von der Verwendung von bcrypt, einem 
 NodeJS-Modul)
+
+KW 49:
+Senden von Daten von der Client-Seite an die Server-Seite, wo dann die Verarbeitung stattfindet
+(z.B. beim Anklicken eines Kontakts soll der Chatverlauf über die Datenbank beim Server angefragt
+werden und das Resultat wieder an den Client geschickt werden) mit XMLHttpRequests ermöglicht.

@@ -28,7 +28,7 @@ class Database {
         });
     }
     showTables(callback) {
-        var query = "insert into user(email, username, password) values ('drazen_petrovic@hotmail.de', 'DraPet', 'PanzerFaust24');";
+        var query = "show tables;";
         this.selectQuery(query, function (result) {
             return (callback(result));
         });
@@ -64,10 +64,18 @@ io.on('connect', (socket) => {
         io.emit('chat-message', message);
     });
 });
+app.use(express.urlencoded({
+    extended: true
+}));
 app.use(express.static(path.join(__dirname, '..\\'))); //ermöglicht das Verwenden von Dateien aus dem Überverzeichnis (site) -> so ziemlich alle Dateien
 //HTTP-Get Methode fordert Daten vom Server an (Parameter: Dateipfad und Callback-Methode)
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '..\\index.html')); //res.send -> sendet HTTP-Response (z.B.: HTML mit sendFile)
+});
+//handlet das Ereignis showChatHistory auf Server-Seite
+app.post('/showChatHistory', (req, res) => {
+    console.log("Chatpartner: " + req.body.name);
+    res.end();
 });
 //startet Server-listening für connections auf dem Port und führt Methode aus
 http.listen(port, () => {
