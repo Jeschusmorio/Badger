@@ -1,3 +1,37 @@
+KW 39:
+Installation Visual Studio Code und NodeJS.
+
+KW 40:
+Einlesen in Socket.io und JavaScript und Verfassung Pflichtenheft. Zudem Projekt 
+in VSCode erstellt.
+
+KW 41:
+Erstellung der Webseite (HTML + CSS)
+
+KW 42:
+Optimierung des Webseitenlayouts durch Bootstrap.
+
+KW 43:
+Einlesen in Express + Aufsetzung Server.
+
+KW 44:
+Echtzeit-Kommunikation mittels Socket.io und JQuery ermölgicht und Skizzierung des 
+Datenbank-Schemas.
+
+KW 45:
+Optimierung des Codes mittels Umstellung von JavaScript auf TypeScript (Erweiterung von 
+JavaScript mit mehr Ähnlichkeit zu Java) + Erstellung der Datenbank lokal auf Heim-PC.
+
+KW 46:
+Einlesen in die Anwendung von dem MySQL-NodeJS-Modul. -> Die Datenbank soll im gleichen File
+laufen, wie der Server, damit dieser die Daten abfangen und in die Datenbank eintragen
+kann.
+
+KW 47:
+Erstellung der Database-Klasse auf Serverseite und den Umgang mit dem MySQL-Modul testen
+(Problem: Übergabe von callback-Objekten bzw. Datenbank Selects in JavaScript bzw. TypeScript 
+noch unklar -> gibt nach Weitergabe ein undefined-Objekt zurück).
+
 KW 48:
 Code optimiert (Datenbankverbindung inkl. Objektweitergabe bei Methoden gefixt) und Gedanken 
 zum Thema Passwort-Hashing gemacht (Möglichkeit von der Verwendung von bcrypt, einem 
@@ -7,3 +41,7 @@ KW 49:
 Senden von Daten von der Client-Seite an die Server-Seite, wo dann die Verarbeitung stattfindet
 (z.B. beim Anklicken eines Kontakts soll der Chatverlauf über die Datenbank beim Server angefragt
 werden und das Resultat wieder an den Client geschickt werden) mit XMLHttpRequests ermöglicht.
+
+KW 50:
+Datenbankschema optimiert (Messages hätte nicht-eindeutige Daten abspeichern können), verwendete
+Technologien beschrieben und Beispiel-Datensätze in die Datenbank geschrieben.

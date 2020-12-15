@@ -27,6 +27,16 @@ class Database {
             return callback(result);
         });
     }
+    insertQuery(stm) {
+        this.dbcon.query(stm, function (err) {
+            if (err)
+                throw err;
+        });
+    }
+    insertMessage(message) {
+        var query = "...;";
+        this.insertQuery(query);
+    }
     showTables(callback) {
         var query = "show tables;";
         this.selectQuery(query, function (result) {
@@ -34,7 +44,8 @@ class Database {
         });
     }
 }
-/*var dbcon = mysql.createConnection({
+/*
+var dbcon = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "root",
@@ -61,11 +72,12 @@ io.on('connect', (socket) => {
     //wird ausgeführt, wenn ein user eine Nachricht sendet
     //leitet die Nachricht an alle verbundenen Sockets weiter (auch an den der sie sendet)
     socket.on('chat-message', (message) => {
+        //db.insertMessage(message);
         io.emit('chat-message', message);
     });
 });
 app.use(express.urlencoded({
-    extended: true
+    extended: true //damit können Daten mit POST weitergesendet werden
 }));
 app.use(express.static(path.join(__dirname, '..\\'))); //ermöglicht das Verwenden von Dateien aus dem Überverzeichnis (site) -> so ziemlich alle Dateien
 //HTTP-Get Methode fordert Daten vom Server an (Parameter: Dateipfad und Callback-Methode)
@@ -82,10 +94,12 @@ http.listen(port, () => {
     console.log('Badger listening at http://localhost:' + port);
 });
 var db = new Database("badger", "root");
+/*
 var tables = "";
-db.showTables(function (result) {
-    tables = result;
-    console.log("Result: ");
-    console.log(tables);
+db.showTables(function(result) {
+  tables = result;
+  console.log("Result: ")
+  console.log(tables);
 });
+*/
 //# sourceMappingURL=server.js.map

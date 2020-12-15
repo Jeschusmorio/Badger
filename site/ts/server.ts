@@ -23,21 +23,31 @@ class Database {
     }
   }
   selectQuery(stm, callback) {
-    this.dbcon.query(stm, function (err, result) {
+    this.dbcon.query(stm, function(err, result) {
         if (err) throw err;
         return callback(result);
     });
   }
+  insertQuery(stm) {
+    this.dbcon.query(stm, function(err) {
+      if (err) throw err;
+    });
+  }
+  insertMessage(message) {
+    var query = "...;";
+    this.insertQuery(query);
+  }
   showTables(callback) {
     var query = "show tables;";
-    this.selectQuery(query, function(result){
-      return(callback(result))
+    this.selectQuery(query, function(result) {
+      return(callback(result));
     });
   }
 }
 
 
-/*var dbcon = mysql.createConnection({
+/*
+var dbcon = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "root",
@@ -67,12 +77,13 @@ io.on('connect', (socket) => {
   //wird ausgeführt, wenn ein user eine Nachricht sendet
   //leitet die Nachricht an alle verbundenen Sockets weiter (auch an den der sie sendet)
   socket.on('chat-message', (message) => {
+    //db.insertMessage(message);
     io.emit('chat-message', message);
   });
 });
 
 app.use(express.urlencoded({
-  extended: true
+  extended: true  //damit können Daten mit POST weitergesendet werden
 }));
 
 app.use(express.static(path.join(__dirname, '..\\'))); //ermöglicht das Verwenden von Dateien aus dem Überverzeichnis (site) -> so ziemlich alle Dateien
@@ -94,9 +105,11 @@ http.listen(port, () => {
 });
 
 var db = new Database("badger", "root");
+/*
 var tables = ""; 
 db.showTables(function(result) {
   tables = result;
   console.log("Result: ")
   console.log(tables);
 });
+*/
