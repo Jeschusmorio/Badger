@@ -34,7 +34,7 @@ class Database {
     });
   }
   insertMessage(message) {
-    var query = "...;";
+    var query = "";
     this.insertQuery(query);
   }
   showTables(callback) {
@@ -42,6 +42,34 @@ class Database {
     this.selectQuery(query, function(result) {
       return(callback(result));
     });
+  }
+  selectMessages(contactID, callback) {
+    var query = "select message from message where contactID = " + contactID + " order by messageDateTime asc;";
+    this.selectQuery(query, function(result) {
+      return(callback(result));
+    });
+  }
+  getContactID(userID1, userID2, callback) {
+    if (userID1 == userID2) {
+      console.log("Zwei verschiedene User angeben!");
+      return;
+    }
+    var query = "select contactID from contact where userID1 = " + userID1 + " and userID2 = " + userID2;
+    var contactID;
+    this.selectQuery(query, function(result) {
+      contactID = callback(result);
+    });
+    if (contactID == undefined) {
+      query = "select contactID from contact where userID1 = " + userID2 + " and userID2 = " + userID1;
+      this.selectQuery(query, function(result) {
+        contactID = callback(result);
+      });
+    }
+    if (contactID == undefined) {
+      console.log("Kein Kontakt zwischen den zwei Usern!");
+      return;
+    }
+    return(callback(contactID));
   }
 }
 
@@ -95,8 +123,23 @@ app.get('/', (req, res) => {
 
 //handlet das Ereignis showChatHistory auf Server-Seite
 app.post('/showChatHistory', (req, res) => {
-  console.log("Chatpartner: " + req.body.name);
-  res.end();
+  //console.log("Chatpartner: " + req.body.contactUserID);
+  var contactID;
+  db.getContactID(req.body.ownUserID, req.body.contactUserID, function(result) {
+    console.log("ContactID:");
+    contactID = result;
+    console.log(contactID);
+  });
+  if (contactID == undefined) {
+    console.log("Kontakt nicht gefunden!")
+    res.end();
+    return;
+  }
+  var chatHistory;
+  db.selectMessages(contactID, function(result) {
+    chatHistory = result;
+  });
+  res.send(chatHistory);
 });
 
 //startet Server-listening für connections auf dem Port und führt Methode aus
@@ -105,11 +148,11 @@ http.listen(port, () => {
 });
 
 var db = new Database("badger", "root");
-/*
-var tables = ""; 
-db.showTables(function(result) {
-  tables = result;
+
+var contactID; 
+db.getContactID(1, 3, function(result) {
+  contactID = result;
   console.log("Result: ")
-  console.log(tables);
+  console.log(contactID);
 });
-*/
+

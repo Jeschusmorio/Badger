@@ -7,6 +7,7 @@
     <link href="css/style.css" rel="stylesheet"/>
     <title>Badger</title>
     <meta property="og:url" content="https://www.badger.com/">
+    <script src="https://code.jquery.com/jquery.js"></script>
 </head>
 <body style="background-color: lightgrey;">
     <!--Container mit 1 row-->
@@ -23,10 +24,10 @@
                 <!--Contacts-->
                 <div class="row constant-height">
                     <div class="contact-box flex-column">
-                        <div class="profile contact" onclick="selectContact('User-1')">
+                        <div class="profile contact" onclick="selectContact(2)">
                             <img src="img/user.png" height="35px" width="35px">User-1
                         </div>
-                        <div class="profile contact" onclick="selectContact('User-2')">
+                        <div class="profile contact" onclick="selectContact(3)">
                             <img src="img/user.png" height="35px" width="35px">User-2
                         </div>
                     </div>
@@ -69,34 +70,9 @@
         </div>
     </div>
     <script src="build/index.js"></script>
-    <script src="https://code.jquery.com/jquery.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="ts/bootstrap.min.js"></script>
     <!--Client Library für socket.io-->
     <script src="node_modules/socket.io-client/dist/socket.io.js"></script>
-    <script>
-        //$ -> JQuery; $function -> die Funktion wird ausgeführt sobald alle Elemente geladen sind
-        //JQuery-Syntax: $(Selector).function()
-        $(function () {
-            var socket = io();
-            //EventHandler, wenn der Text der Form submitted wird
-            $('form').submit(function(eventHandler) {
-                eventHandler.preventDefault(); //Reload der Seite wird verhindert
-                let message = $('#message').val();
-                if (message != '') {
-                    //ruft das Event 'chat-message' beim Server auf und sendet als Parameter die Nachricht
-                    socket.emit('chat-message', message); 
-                    $('#message').val(''); //das Textfeld wird entleert
-                }
-            });
-            socket.on('chat-message', (message) => {
-                $('#chat-messages').append('<li>' + message + '</li>');
-                //JQuery.scrollTop(pxl) -> ändert Position der Scrollbar um die angegebene Pixelzahl nach unten
-                //[0] -> wählt das DOM-Element aus (Document Object Model)
-                //JS.scrollHeight -> liefert die tatsächliche Höhe der Elemente in der Scrollbar (auch unsichtbaren Content)
-                $('#message-box').scrollTop($('#message-box')[0].scrollHeight); //falls neue Nachrichten kommen, ist die Scrollbar ganz unten
-            });
-        });
-    </script>
 </body>
 </html>

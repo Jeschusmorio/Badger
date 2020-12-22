@@ -45,3 +45,6 @@ werden und das Resultat wieder an den Client geschickt werden) mit XMLHttpReques
 KW 50:
 Datenbankschema optimiert (Messages hätte nicht-eindeutige Daten abspeichern können), verwendete
 Technologien beschrieben und Beispiel-Datensätze in die Datenbank geschrieben.
+
+KW 51:
+JQuery funktioniert nun in externen .ts-File (type-definition angegeben)
