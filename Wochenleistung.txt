@@ -47,4 +47,25 @@ Datenbankschema optimiert (Messages hätte nicht-eindeutige Daten abspeichern k�
 Technologien beschrieben und Beispiel-Datensätze in die Datenbank geschrieben.
 
 KW 51:
-JQuery funktioniert nun in externen .ts-File (type-definition angegeben)
+JQuery funktioniert nun in externen .ts-File (type-definition angegeben); xmlHTTPResopnse für
+Chatverlauf angefangen -> noch fehlerhaft; 
+
+KW 52:
+Lösung des xmlHTTPRespnse: SocketIO; Datenbankcall für den Chatverlauf geschrieben; Chatverlauf beim Client
+darstellen, wenn Kontakt gewechselt wird; Für Rooms eine Map beim Server erstellt, welche die userID lt. 
+Datenbank mit der socketID für die aktuelle Session abspeichert; bei connect wird ein Eintrag in die Map 
+erstellt, bei disconnect der Eintrag entfernt;
+
+KW 53:
+Diverse Methoden zu Datenbankabfragen geschrieben (getUserByID, getContactUserIDs(userID)) und beim
+Laden der Seite vom Client werden die Kontakte laut Datenbank dynamisch links aufgelistet; Eigener User
+wird nun auch gleich beim Laden der Seite vom Client laut Datenbank dynamisch angezeigt
+
+KW 01:
+Kommunikation über Chatrooms funktioniert nun! Dies war leichter als gedacht: Beim Klicken auf einen Chatpartner
+betritt der Nutzer einen Chatroom mit dem gleichen Namen, wie die contactID zwischen den zwei Nutzern.
+Hierbei wird auch gleich der letzte Chatroom verlassen. Somit wird die SocketID von dem Chatpartner nicht benötigt, 
+ansonsten würde er auch eine Nachricht von einem Schreibpartner bekommen, wenn er sich nichtmal in dem Chatroom 
+befindet, da dieser ihn direkt kontaktiert.
+=> Map, welche userID mit socketID verknüpft wird nicht für die Kommunikation benötigt; trotzdem drinnen gelassen,
+da somit überprüft werden kann, welcher Nutzer gerade die Seite betritt und verlässt

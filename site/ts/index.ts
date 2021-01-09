@@ -1,52 +1,72 @@
 const ownUserID = 1;
+var currentContactID;
+
 
 //$ -> JQuery; $function -> die Funktion wird ausgeführt sobald alle Elemente geladen sind
 //JQuery-Syntax: $(Selector).function()
 $(function () {
     var socket = io();
+    
+    //hier wird die Seite geladen =>
+    //eigenes Profil vom Server anfragen und darstellen (oben links)
+    socket.emit("requestOwnProfile", ownUserID);
+    socket.on("loadOwnProfile", (ownUser) => {
+        let htmlString = "<div class=\"profile\">" + 
+            "<img src=\"img/user.png\" height=\"35px\" width=\"35px\">" + ownUser[0].username + 
+            "#" + ownUserID +
+        "</div>";
+        $("#ownUser").append(htmlString);
+    });
+
+    //Kontakte vom Server anfragen und darstellen
+    socket.emit("requestContacts", ownUserID);
+    socket.on("loadContacts", (contactUsers) => {
+        contactUsers.forEach(contactUser => {
+            let htmlString = "<div class=\"profile contact\" id=\"" + contactUser[0].userID + "\">" + 
+                "<img src=\"img/user.png\" height=\"35px\" width=\"35px\">" + contactUser[0].username + 
+                "#" + contactUser[0].userID + 
+            "</div>";
+            //console.log(contactUser[0].username);
+            $("#contactBox").append(htmlString);
+        });
+        //der erste Kontakt soll beim Laden der Seite angezeigt werden
+        socket.emit("showChatHistory", ownUserID, contactUsers[0][0].userID, currentContactID);
+    });
+
+    //alle Abfragen vom Server =>
+    socket.on("getSocketID", () => {
+        socket.emit("saveSocketID", ownUserID, socket.id); //Server speichert socket.id mit userID
+    });
+
     //EventHandler, wenn der Text der Form submitted wird
-    $('form').submit(function(eventHandler) {
+    $(document).on("submit", function(eventHandler) {
         eventHandler.preventDefault(); //Reload der Seite wird verhindert
-        let message = $('#message').val();
-        if (message != '') {
+        let message = $("#message").val();
+        if (message != "") {
             //ruft das Event 'chat-message' beim Server auf und sendet als Parameter die Nachricht
-            socket.emit('chat-message', message); 
-            $('#message').val(''); //das Textfeld wird entleert
+            socket.emit("chatMessage", message, currentContactID); 
+            $("#message").val(''); //das Textfeld wird entleert
         }
-     });
-     socket.on('chat-message', (message) => {
-        $('#chat-messages').append('<li>' + message + '</li>');
+    });
+    socket.on("chatMessage", (message) => {
+        $("#chat-messages").append("<li>" + message + "</li>");
         //JQuery.scrollTop(pxl) -> ändert Position der Scrollbar um die angegebene Pixelzahl nach unten
         //[0] -> wählt das DOM-Element aus (Document Object Model)
         //JS.scrollHeight -> liefert die tatsächliche Höhe der Elemente in der Scrollbar (auch unsichtbaren Content)
-        $('#message-box').scrollTop($('#message-box')[0].scrollHeight); //falls neue Nachrichten kommen, ist die Scrollbar ganz unten
+        $("#message-box").scrollTop($("#message-box")[0].scrollHeight); //falls neue Nachrichten kommen, ist die Scrollbar ganz unten
+    });
+    $(document).on("click", ".contact", function(eventHandler) {
+        eventHandler.preventDefault();
+        $("#chat-messages").empty(); //löscht alle Nachrichten, die momentan im Chatbereich sind
+        let contactUserID = Number($(this).attr("id"));
+        socket.emit("showChatHistory", ownUserID, contactUserID, currentContactID);
+    });
+    socket.on("showChatHistory", (messages, contactID) => {
+        //Beim Nutzer wird der Kontakt, den er gerade geöffnet hat, gespeichert
+        currentContactID = contactID;
+        //Dann werden alle Nachrichten laut Datenbank angezeigt
+        for (let i in messages) {
+            $("#chat-messages").append("<li>" + messages[i].message + "</li>");
+        }
     });
 });
-
-function selectContact(contactUserID) {
-    var xhttp = new XMLHttpRequest(); //zum senden von HTTP-Requests an den Express-Server
-
-    //wenn der Server antwortet => Antwort soll in der Messagebox angezeigt werden
-    xhttp.onreadystatechange = function() {
-        //readyState (Status der XMLHttpRequest) == 4: request finished and response is ready
-        //readyState == 0: request not initialized
-        //status (Status-Nummer einer Request -> sobald Request fertig ist) == 200: "OK"
-        //status == 404: "Not Found"
-        if (this.readyState == 4 && this.status == 200) {
-            var chatHistory = this.responseText;
-            for (var i = 0; i < chatHistory.length; i++) {
-                $('#chat-messages').append('<li>' + chatHistory[i] + '</li>');
-            }
-        }
-    };
-    //methode: POST
-    //an: shwoChatHistory
-    //arbeitet asynchron: true
-    xhttp.open("POST", "showChatHistory", true);
-
-    //setRequestHeader macht in dieser Form das POST der Daten in HTML-Form möglich (ansonsten Werte undefined)
-    //header = "Content-type" -> hier z.B. "name"
-    //value = "application/x-www-form-urlencoded" -> hier jeweiliger contactName
-    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhttp.send("ownUserID=" + ownUserID + "&contactUserID=" + contactUserID);
-}

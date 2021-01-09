@@ -48,9 +48,11 @@ references user(userID);
 insert into user (email, username, password) values ('mariopetrovic02@hotmail.com', 'Jeschu', 'root');
 insert into user (email, username, password) values ('test-mail-1@hotmail.com', 'User-1', 'password-1');
 insert into user (email, username, password) values ('test-mail-2@hotmail.com', 'User-2', 'password-2');
+insert into user (email, username, password) values ('test-mail-3@hotmail.com', 'User-3', 'password-3');
 
 insert into contact (userID1, userID2) values (1, 2);
 insert into contact (userID1, userID2) values (1, 3);
+insert into contact (userID1, userID2) values (4, 1);
 
 insert into message (contactID, userID, message) values (1, 2, 'Hey, ich bin User-1!');
 insert into message (contactID, userID, message) values (1, 1, 'Hey, User-1, wie gehts?');

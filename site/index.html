@@ -16,21 +16,10 @@
             <!--UserColumn mit eigener User, Kontakten und Settings-->
             <div class="col-md-3 bg-secondary" style="border-style: solid; border-radius: 5px; border-color: black;">
                 <!--Eigener User-->
-                <div class="row" style="border-bottom: solid; border-color: black;">
-                    <div class="profile">
-                        <img src="img/user.png" height="35px" width="35px">Mario Petrovic
-                    </div>
-                </div>
+                <div class="row" id="ownUser" style="border-bottom: solid; border-color: black;"></div>
                 <!--Contacts-->
                 <div class="row constant-height">
-                    <div class="contact-box flex-column">
-                        <div class="profile contact" onclick="selectContact(2)">
-                            <img src="img/user.png" height="35px" width="35px">User-1
-                        </div>
-                        <div class="profile contact" onclick="selectContact(3)">
-                            <img src="img/user.png" height="35px" width="35px">User-2
-                        </div>
-                    </div>
+                    <div class="contact-box flex-column" id="contactBox"></div>
                 </div>
                 
                 <!--Settings-->
@@ -58,12 +47,14 @@
                     <!--Textfeld-->
                     <div class="row bg-light" style="border-top: solid; border-color: black;">
                         <!--InputGroup = extension von form (hier: mit textfeld und button)-->
-                        <div class="input-group">
-				    	    <input name="message" id="message" type="text" class="form-control" placeholder="Send a message..." aria-label="message" aria-describedby="button-addon2">
-				    	    <div class="input-group-append">
-				    		    <button class="btn btn-outline-secondary" type="submit">Send</button>
-				    	    </div>
-				    	</div>
+                        <form method="POST">
+                            <div class="input-group">
+                                <input name="message" id="message" type="text" class="form-control" placeholder="Send a message..." aria-label="message" aria-describedby="button-addon2">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="submit">Send</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </form>
             </div>
