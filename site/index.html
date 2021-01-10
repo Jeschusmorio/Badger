@@ -34,11 +34,7 @@
             <!--ChatColumn mit User, Messages und Textbar-->
             <div class="col-md-9 bg-secondary" style="border-style: solid; border-radius: 5px; border-color: black;">
                 <!--Schreibpartner-->
-                <div class="row" style="border-bottom: solid; border-color: black;">
-                    <div class="profile">
-                        <img src="img/user.png" height="35px" width="35px">Dummy
-                    </div>
-                </div>
+                <div class="row" id="currentChatPartner" style="border-bottom: solid; border-color: black;"></div>
                 <!--Nachrichten-->
                 <div id="message-box" class="row bg-light constant-height" style="overflow-y: scroll;">
                     <ul id="chat-messages"></ul>

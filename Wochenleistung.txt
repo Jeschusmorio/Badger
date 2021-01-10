@@ -68,4 +68,5 @@ Hierbei wird auch gleich der letzte Chatroom verlassen. Somit wird die SocketID 
 ansonsten würde er auch eine Nachricht von einem Schreibpartner bekommen, wenn er sich nichtmal in dem Chatroom 
 befindet, da dieser ihn direkt kontaktiert.
 => Map, welche userID mit socketID verknüpft wird nicht für die Kommunikation benötigt; trotzdem drinnen gelassen,
-da somit überprüft werden kann, welcher Nutzer gerade die Seite betritt und verlässt
+da somit überprüft werden kann, welcher Nutzer gerade die Seite betritt und verlässt;
+Chatnachrichten werden jetzt in der Datenbank gespeichert und Nutzer beim anklicken als Chatpartner dargestellt

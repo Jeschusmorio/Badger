@@ -42,8 +42,9 @@ class Database {
       }
     });
   }
-  insertMessage(message) {
-    let query = "";
+  insertMessage(message, contactID, userID) {
+    let query = "insert into message (contactID, userID, message) values " + 
+        "(" + contactID + ", " + userID + ", '" + message + "');";
     this.insertQuery(query);
   }
   showTables(callback) {
@@ -58,7 +59,7 @@ class Database {
     });
   }
   selectMessages(contactID, callback) {
-    let query = "select message from message where contactID = " + contactID + " order by messageDateTime asc;";
+    let query = "select userID, message from message where contactID = " + contactID + " order by messageDateTime asc;";
     this.selectQuery(query, (result) => {
       callback(result);
     });
@@ -166,25 +167,29 @@ io.on("connect", (socket) => {
   //socket.emit leitet die Nachricht nur an den Socket weiter, welcher gerade mit dem Server kommuniziert
   //socket.to([roomID]).emit() leitet die Nachricht an alle Nutzer eines Rooms weiter, bis auf den Nutzer
   //                            der diese Methode aufgerufen hat
-  socket.on("chatMessage", (message, contactID) => {
-    //db.insertMessage(message);
+  socket.on("chatMessage", (message, contactID, userID) => {
+    //Chatnachricht in die Datenbank speichern
+    db.insertMessage(message, contactID, userID);
 
     //leitet Nachricht an alle Chatpartner weiterleiten, welche sich momentan in dem Raum befinden
     //außer sich selbst
-    socket.to(contactID).emit("chatMessage", message);
+    socket.to(contactID).emit("chatMessage", message, userID);
     //deshalb nochmal die Nachricht an den User weiterleiten, welcher sie gesendet hat
-    socket.emit("chatMessage", message);
+    socket.emit("chatMessage", message, userID);
   });
 
-  socket.on("showChatHistory", (userID1, userID2, currentContactID) => {
+  socket.on("showChatHistory", (ownUserID, chatPartnerUserID, currentContactID) => {
     //letzten Chatroom verlassen
     socket.leave(currentContactID);
-    db.getCertainContactID(userID1, userID2, 2, (contactID) => {
+    db.getCertainContactID(ownUserID, chatPartnerUserID, 2, (contactID) => {
       //neuen Chatroom betreten
       socket.join(contactID);
       db.selectMessages(contactID, (messages) => {
-        //der Chatverlauf wird für den Nutzer der den Kontakt auswählt angezeigt
-        socket.emit("showChatHistory", messages, contactID);
+        //user-Objekt des Chatpartners abfragen
+        db.getUserByID(chatPartnerUserID, (chatPartner) => {
+          //der Chatverlauf wird für den Nutzer der den Kontakt auswählt angezeigt
+          socket.emit("showChatHistory", messages, contactID, chatPartner);
+        });
       });
     });
   });

@@ -1,5 +1,20 @@
 const ownUserID = 1;
 var currentContactID;
+function printChatMessage(message, userID) {
+    //wenn man selbst die Nachricht gesendet hat, wird sie normal angezeigt
+    if (userID === ownUserID) {
+        $("#chat-messages").append("<li>" + message + "</li>");
+    }
+    //wenn nicht, ist sie fett-gedruckt
+    else {
+        $("#chat-messages").append("<li style=\"font-weight:bold\">" + message + "</li>");
+    }
+}
+function getUserHTMLString(user) {
+    return "<div class=\"profile\">" +
+        "<img src=\"img/user.png\" height=\"35px\" width=\"35px\">" + user[0].username + "#" + user[0].userID +
+        "</div>";
+}
 //$ -> JQuery; $function -> die Funktion wird ausgeführt sobald alle Elemente geladen sind
 //JQuery-Syntax: $(Selector).function()
 $(function () {
@@ -8,10 +23,7 @@ $(function () {
     //eigenes Profil vom Server anfragen und darstellen (oben links)
     socket.emit("requestOwnProfile", ownUserID);
     socket.on("loadOwnProfile", (ownUser) => {
-        let htmlString = "<div class=\"profile\">" +
-            "<img src=\"img/user.png\" height=\"35px\" width=\"35px\">" + ownUser[0].username +
-            "#" + ownUserID +
-            "</div>";
+        let htmlString = getUserHTMLString(ownUser);
         $("#ownUser").append(htmlString);
     });
     //Kontakte vom Server anfragen und darstellen
@@ -22,7 +34,6 @@ $(function () {
                 "<img src=\"img/user.png\" height=\"35px\" width=\"35px\">" + contactUser[0].username +
                 "#" + contactUser[0].userID +
                 "</div>";
-            //console.log(contactUser[0].username);
             $("#contactBox").append(htmlString);
         });
         //der erste Kontakt soll beim Laden der Seite angezeigt werden
@@ -38,12 +49,12 @@ $(function () {
         let message = $("#message").val();
         if (message != "") {
             //ruft das Event 'chat-message' beim Server auf und sendet als Parameter die Nachricht
-            socket.emit("chatMessage", message, currentContactID);
+            socket.emit("chatMessage", message, currentContactID, ownUserID);
             $("#message").val(''); //das Textfeld wird entleert
         }
     });
-    socket.on("chatMessage", (message) => {
-        $("#chat-messages").append("<li>" + message + "</li>");
+    socket.on("chatMessage", (message, userID) => {
+        printChatMessage(message, userID);
         //JQuery.scrollTop(pxl) -> ändert Position der Scrollbar um die angegebene Pixelzahl nach unten
         //[0] -> wählt das DOM-Element aus (Document Object Model)
         //JS.scrollHeight -> liefert die tatsächliche Höhe der Elemente in der Scrollbar (auch unsichtbaren Content)
@@ -55,13 +66,17 @@ $(function () {
         let contactUserID = Number($(this).attr("id"));
         socket.emit("showChatHistory", ownUserID, contactUserID, currentContactID);
     });
-    socket.on("showChatHistory", (messages, contactID) => {
+    socket.on("showChatHistory", (messages, contactID, chatPartner) => {
         //Beim Nutzer wird der Kontakt, den er gerade geöffnet hat, gespeichert
         currentContactID = contactID;
-        console.log(currentContactID);
+        //Chatpartner oben darstellen
+        let htmlString = getUserHTMLString(chatPartner);
+        //vorherigen Nutzer entfernen und neuen hinzufügen
+        $("#currentChatPartner").empty();
+        $("#currentChatPartner").append(htmlString);
         //Dann werden alle Nachrichten laut Datenbank angezeigt
         for (let i in messages) {
-            $("#chat-messages").append("<li>" + messages[i].message + "</li>");
+            printChatMessage(messages[i].message, messages[i].userID);
         }
     });
 });
