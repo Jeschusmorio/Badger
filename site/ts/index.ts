@@ -1,4 +1,4 @@
-const ownUserID = 1;
+var ownUserID;
 var currentContactID;
 
 function printChatMessage(message, userID) {
@@ -6,9 +6,9 @@ function printChatMessage(message, userID) {
     if(userID === ownUserID) {
         $("#chat-messages").append("<li>" + message + "</li>");
     }
-    //wenn nicht, ist sie fett-gedruckt
+    //wenn nicht, ist sie laut der Klasse chatPartnerMessage formattiert
     else {
-        $("#chat-messages").append("<li style=\"font-weight:bold\">" + message + "</li>");
+        $("#chat-messages").append("<li class=\"chatPartnerMessage\">" + message + "</li>");
     }
 }
 
@@ -18,12 +18,18 @@ function getUserHTMLString(user) {
             "</div>";
 }
 
+function getRandomUserID(max) {
+    return Math.floor(Math.random() * Math.floor(max)) + 1;
+}
+
 //$ -> JQuery; $function -> die Funktion wird ausgeführt sobald alle Elemente geladen sind
 //JQuery-Syntax: $(Selector).function()
 $(function () {
     var socket = io();
     
     //hier wird die Seite geladen =>
+    //Nutzer bekommt ein zufälliges Account beim Laden (zum Testen)
+    ownUserID = getRandomUserID(4);
     //eigenes Profil vom Server anfragen und darstellen (oben links)
     socket.emit("requestOwnProfile", ownUserID);
     socket.on("loadOwnProfile", (ownUser) => {

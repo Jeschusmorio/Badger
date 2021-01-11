@@ -1,3 +1,4 @@
+drop database if exists badger;
 create database badger;
 use badger;
 
