@@ -1,10 +1,17 @@
+const path = require("path"); //leichtes Joinen von Dateipfaden
 const express = require("express"); //NodeJS-Methode -> ladet express-Modul in die Datei
 const app = express(); //erstellt eine express-Application (Objekt)
-const http = require("http").createServer(app);
+
+const https = require("https");
+const fs = require("fs");
+const privateKey = fs.readFileSync(path.join(__dirname, "..\\sslcert/server.key"), "utf8");
+const certificate = fs.readFileSync(path.join(__dirname, "..\\sslcert/server.cert"), "utf8");
+const credentials = {key: privateKey, cert: certificate};
+const server = https.createServer(credentials, app);
+
 const port = 80; //Standard HTTP Port
-const path = require("path"); //leichtes Joinen von Dateipfaden
 const socketio = require("socket.io"); //NodeJS HTTP Server Socket.io
-const io = socketio(http);
+const io = socketio(server);
 const mysql = require("mysql");
 
 const userIDtoSocketID = new Map();
@@ -237,6 +244,6 @@ app.get('/', (req, res) => {
 });
 
 //startet Server-listening für connections auf dem Port und führt Methode aus
-http.listen(port, () => {
-  console.log("Badger listening at http://localhost:" + port);
+server.listen(port, () => {
+  console.log("Badger listening at https://localhost:" + port);
 });

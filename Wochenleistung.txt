@@ -70,3 +70,14 @@ befindet, da dieser ihn direkt kontaktiert.
 => Map, welche userID mit socketID verknüpft wird nicht für die Kommunikation benötigt; trotzdem drinnen gelassen,
 da somit überprüft werden kann, welcher Nutzer gerade die Seite betritt und verlässt;
 Chatnachrichten werden jetzt in der Datenbank gespeichert und Nutzer beim anklicken als Chatpartner dargestellt
+
+KW 02:
+Da noch keine Login-Seite vorhanden sind, wird die ownUserID beim Laden der Seite zufällig bestimmt. Dies
+dient vor allem Testzwecken.
+
+KW 03:
+Informieren über Verschlüsselung der Kommunikation, damit sensible Daten wie Passwörter, Chatnachrichten
+und andere Zugriffsdaten nicht abgefangen werden können.
+
+KW 04:
+Lösung für die Verschlüsselung (HTTPS) verstanden und implementiert.
