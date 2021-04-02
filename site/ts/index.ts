@@ -1,5 +1,6 @@
 var ownUserID;
 var currentContactID;
+var currentChatPartner;
 
 function printChatMessage(message, userID) {
     //wenn man selbst die Nachricht gesendet hat, wird sie normal angezeigt
@@ -29,7 +30,8 @@ $(function () {
     
     //hier wird die Seite geladen =>
     //Nutzer bekommt ein zufälliges Account beim Laden (zum Testen)
-    ownUserID = getRandomUserID(4);
+    //ownUserID = getRandomUserID(4);
+    ownUserID = 1;
     //eigenes Profil vom Server anfragen und darstellen (oben links)
     socket.emit("requestOwnProfile", ownUserID);
     socket.on("loadOwnProfile", (ownUser) => {
@@ -82,6 +84,8 @@ $(function () {
     socket.on("showChatHistory", (messages, contactID, chatPartner) => {
         //Beim Nutzer wird der Kontakt, den er gerade geöffnet hat, gespeichert
         currentContactID = contactID;
+        //und der ChatParnter
+        currentChatPartner = chatPartner[0];
 
         //Chatpartner oben darstellen
         let htmlString = getUserHTMLString(chatPartner);
@@ -93,5 +97,17 @@ $(function () {
         for (let i in messages) {
             printChatMessage(messages[i].message, messages[i].userID);
         }
+    });
+    $(document).on("click", ".addFriend", function(eventHandler) {
+        
+    });
+    $(document).on("click", ".removeFriend", function(eventHandler) {
+        eventHandler.preventDefault();
+        if (confirm("Do you really want to remove " + currentChatPartner.username + " from your Friend-List?")) {
+            socket.emit("removeFriend", currentContactID);
+        }
+    });
+    socket.on("reloadPage", () => {
+        location.reload();
     });
 });

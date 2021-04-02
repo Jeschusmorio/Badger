@@ -42,7 +42,7 @@ class Database {
       }
     });
   }
-  insertQuery(stm) {
+  updateQuery(stm) {
     this.dbcon.query(stm, function(err) {
       if (err) {
         console.log("Error in SQL-Syntax: " + stm);
@@ -52,7 +52,7 @@ class Database {
   insertMessage(message, contactID, userID) {
     let query = "insert into message (contactID, userID, message) values " + 
         "(" + contactID + ", " + userID + ", '" + message + "');";
-    this.insertQuery(query);
+    this.updateQuery(query);
   }
   showTables(callback) {
     let query = "show tables;";
@@ -70,6 +70,11 @@ class Database {
     this.selectQuery(query, (result) => {
       callback(result);
     });
+  }
+  deleteContact(contactID, callback) {
+    let query = "delete from contact where contactID = " + contactID + ";";
+    this.updateQuery(query);
+    callback();
   }
 
   //Rekursive Funktion da die Datenbank pro Contact zwei Nutzer speichert (zwei UserIDs)
@@ -228,6 +233,11 @@ io.on("connect", (socket) => {
           }
         });
       });
+    });
+  });
+  socket.on("removeFriend", (contactID) => {
+    db.deleteContact(contactID, () => {
+      socket.emit("reloadPage");
     });
   });
 });

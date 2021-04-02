@@ -37,7 +37,8 @@ references user(userID);
 alter table message 
 add constraint message_contact 
 foreign key(contactID) 
-references contact(contactID);
+references contact(contactID)
+on delete CASCADE;
 
 alter table message 
 add constraint message_user 

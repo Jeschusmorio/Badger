@@ -39,3 +39,7 @@
 .chatPartnerMessage {
     font-weight: bold;
 }
+
+.friendListButton:hover {
+    cursor: pointer;
+}
