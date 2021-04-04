@@ -14,7 +14,12 @@ const socketio = require("socket.io"); //NodeJS HTTP Server Socket.io
 const io = socketio(server);
 const mysql = require("mysql");
 
-const userIDtoSocketID = new Map();
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
+
+//const userIDtoSocketID = new Map();
+
+var clientUserID;
 
 class Database {
   private dbcon;
@@ -58,6 +63,20 @@ class Database {
     let query = "insert into contact (userID1, userID2) values " + 
         "(" + userID1 + ", " + userID2 + ");";
     this.updateQuery(query);
+  }
+  insertUser(username, email, password, callback) {
+    //hashen des Passworts
+    let hash = bcrypt.hashSync(password, saltRounds);
+    //speichern in die Datenbank (hash wird für Password verwendet)
+    let query = "insert into user (email, username, password) values " + 
+        "('" + email + "', '" + username + "', '" + hash + "');";
+    this.updateQuery(query);
+    //userID des neu erstellten Users aus der Datenbank holen und in der
+    //callback-Methode returnen
+    db.getUserByEmail(email, (result) => {
+      callback(result[0].userID);
+    });
+    
   }
   showTables(callback) {
     let query = "show tables;";
@@ -148,6 +167,12 @@ class Database {
       callback(result);
     });
   }
+  getUserByEmail(email, callback) {
+    let query = "select * from user where email = '" + email + "';";
+    this.selectQuery(query, (result) => {
+      callback(result);
+    });
+  }
   //liefert true, wenn es einen user mit der mitgegebenen userID gibt, ansonsten false
   userIDExists(userID, callback) {
     let query = "select count(*) as numberOfUsers from user where userID = " + userID + ";";
@@ -157,8 +182,47 @@ class Database {
       callback(result[0].numberOfUsers == 1);
     });
   }
+  //liefert die userID mit zusammengehörigen E-Mail und Passwort zurück
+  //falls diese nicht zussammenpassen wird für die userID -1 returned
+  loginIsValid(email, password, callback) {
+    let query = "select password from user where email = '" + email + "';";
+    this.selectQuery(query, (hashPassword) => {
+      //wenn ein User mit dieser Email existiert (nicht undefined ist), zuerst das Passwort überprüft werden
+      if (hashPassword[0]) {
+        //überprüfen ob das Passwort übereinstimmt
+        //wenn ja, ist result true
+        let result = bcrypt.compareSync(password, hashPassword[0].password);
+        
+        //wenn ja, anhand der E-Mail Adresse die userID von der Datenbank holen
+        if (result) {
+          db.getUserByEmail(email, (user) => {
+            //danach diese an die callback-Funktion der loginIsValid-Methode übergeben
+            callback(user[0].userID);
+          });
+        }
+        //ansonsten soll -1 als Fehlerwert returned werden
+        else {
+          callback(-1);
+        }
+      }
+      //ansonsten soll -1 als Fehlerwert returned werden
+      else {
+        callback(-1);
+      }
+    });
+  }
+  //liefert true, wenn es einen user mit der mitgegebenen E-Mail gibt, ansonsten false
+  emailExists(email, callback) {
+    let query = "select count(*) as numberOfUsers from user where email = '" + email + "';";
+    this.selectQuery(query, (result) => {
+      //wenn die Anzahl der user mit der angegebenen E-Mail 1 beträgt existiert dieser User -> true
+      //ansonsten (bei 0) existiert dieser User nicht -> false
+      callback(result[0].numberOfUsers == 1);
+    });
+  }
 }
 
+/*
 function getUserIDBySocketID(socketID, callback) {
   for (let [key, value] of userIDtoSocketID) {
     if (value === socketID) {
@@ -166,6 +230,7 @@ function getUserIDBySocketID(socketID, callback) {
     }
   }
 }
+*/
 
 var db = new Database("badger", "root");
 
@@ -173,20 +238,28 @@ var db = new Database("badger", "root");
 //wird ausgeführt, wenn eine Socket.io-Connection aufgebaut wird (socket -> repräsentiert die aktuelle Socket Verbindung zum Client)
 io.on("connect", (socket) => {
 
+  
+  socket.emit("setOwnUserID", clientUserID);
+  console.log("User #" + clientUserID + " connected!");
+  /*
   //Server speichert userID und SocketID in einer Map
   socket.emit("getSocketID");
   socket.on("saveSocketID", (userID, socketID) => {
     userIDtoSocketID.set(userID, socketID);
     console.log("User #" + userID + " connected!");
   });
+  */
 
   //wird ausgeführt, wenn ein user auf Client-Seite (socket) disconnected
   socket.on("disconnect", () => {
+    /*
     //Wennn der User disconnected, wird sein Eintrag in der SocketID-Map gelöscht
     getUserIDBySocketID(socket.id, (userID) => {
       console.log("User #" + userID + " disconnected!");
       userIDtoSocketID.delete(userID);
     });
+    */
+    console.log("User #" + clientUserID + " disconnected!");
   });
 
   //wird ausgeführt, wenn ein user eine Nachricht sendet
@@ -301,7 +374,77 @@ app.use(express.static(path.join(__dirname, "..\\"))); //ermöglicht das Verwend
 
 //HTTP-Get Methode fordert Daten vom Server an (Parameter: Dateipfad und Callback-Methode)
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, "..\\index.html")); //res.send -> sendet HTTP-Response (z.B.: HTML mit sendFile)
+  res.sendFile(path.join(__dirname, "..\\auth\\login.html")); //res.send -> sendet HTTP-Response (z.B.: HTML mit sendFile)
+});
+
+app.get('/register', (req, res) => {
+  res.sendFile(path.join(__dirname, "..\\auth\\register.html"));
+});
+
+app.get('/errorRegister', (req, res) => {
+  res.sendFile(path.join(__dirname, "..\\auth\\errorRegister.html"));
+});
+
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, "..\\auth\\login.html"));
+});
+
+app.get('/errorLogin', (req, res) => {
+  res.sendFile(path.join(__dirname, "..\\auth\\errorLogin.html"));
+});
+
+app.post('/main', (req, res) => {
+  res.sendFile(path.join(__dirname, "..\\main.html"));
+});
+
+app.post('/loginCheck', (req, res) => {
+  let email = req.body.emailInput;
+  let password = req.body.passwordInput;
+  //überprüfen ob ein User mit der gegebenen email und password existiert
+  db.loginIsValid(email, password, (userID) => {
+    //wenn ja, wird der user auf die hauptseite geleitet und seine userID gespeichert
+    if (userID != -1) {
+      clientUserID = userID;
+      //der HTTP code 307 wird benötigt, da es sich beim /main-Pfad um einen POST-Request handelt
+      //dieser ist kein GET-Request, da man sonst einfach über die URL auf die Seite kommen kann
+      //wenn man /main dahinter schreiben würde
+      res.redirect(307, '/main');
+    }
+    //wenn nicht wird er wieder auf die Loginseite geleitet
+    else {
+      res.redirect('/errorLogin');
+    }
+  });
+});
+
+app.post('/registerCheck', (req, res) => {
+  let username = req.body.usernameInput;
+  let email = req.body.emailInput;
+  let password = req.body.passwordInput;
+  let confirmPassword = req.body.confirmPasswordInput;
+
+  //zuerst schauen, ob das Passwort zweimal gleich eingegeben wurde
+  //wenn nicht soll der Client wieder auf die RegisterSeite kommen
+  if (!(password == confirmPassword)) {
+    res.redirect('/errorRegister');
+  }
+  //ansonsten soll überprüft werden, ob die E-Mail Adresse schon in der Datenbank vorhanden ist
+  else {
+    db.emailExists(email, (emailExists) => {
+      //wenn die E-Mail Adresse schon existiert, wird der User wieder auf die RegisterSeite geleitet
+      //und muss eine andere E-Mail Adresser verwenden
+      if (emailExists) {
+        res.redirect('/errorRegister');
+      }
+      //ansonsten wird sein Nutzer erstellt und er wird gleich eingeloggt
+      else {
+        db.insertUser(username, email, password, (userID) => {
+          clientUserID = userID;
+          res.redirect(307, '/main');
+        });
+      }
+    });
+  }
 });
 
 //startet Server-listening für connections auf dem Port und führt Methode aus

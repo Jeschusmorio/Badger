@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="ISO-8859-1">
+		<title>Badger-Login</title>
+	</head>
+	<body>
+		<h1>Login</h1>
+    	<p>Please enter following Information to log into your Account:</p>
+    	<form method="post" action="loginCheck">
+        	<label for="emailInput">E-Mail:</label>
+        	<input type="text" name="emailInput" placeholder="example@example.com"></br>
+        	<label for="passwordInput">Password:</label>
+        	<input type="password" name="passwordInput" placeholder="ThisIsVerySecure"></br>
+        	<input type="submit" value="Log In">
+    	</form>
+		<p>No Account yet? <a href="register">Register</a></p>
+		<script src="node_modules/socket.io-client/dist/socket.io.js"></script>
+    	<script src="build/login.js"></script>
+	</body>
+</html>

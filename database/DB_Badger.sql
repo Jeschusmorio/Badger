@@ -6,7 +6,7 @@ create table user (
 userID int auto_increment primary key,
 email varchar(255) not null unique,
 username varchar(50) not null,
-password varchar(50) not null,
+password varchar(255) not null,
 profilePicture mediumblob
 );
 
@@ -47,7 +47,7 @@ references user(userID);
 
 
 
-insert into user (email, username, password) values ('mariopetrovic02@hotmail.com', 'Jeschu', 'root');
+insert into user (email, username, password) values ('jeschusmorio@gmail.com', 'Jeschu', 'root');
 insert into user (email, username, password) values ('test-mail-1@hotmail.com', 'User-1', 'password-1');
 insert into user (email, username, password) values ('test-mail-2@hotmail.com', 'User-2', 'password-2');
 insert into user (email, username, password) values ('test-mail-3@hotmail.com', 'User-3', 'password-3');

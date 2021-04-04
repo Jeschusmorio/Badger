@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="ISO-8859-1">
+		<title>Badger-Register</title>
+	</head>
+	<body>
+		<h1>Register</h1>
+		<p style="color: red">Oops, something went wrong!</p>
+		<p style="color: red">Try another E-Mail adress or make sure the password is entered correctly twice!</p>
+    	<p>Please enter following Information to create an Account:</p>
+    	<form method="post" action="registerCheck">
+        	<label for="usernameInput">Username:</label>
+        	<input type="text" name="usernameInput" placeholder="Jeschu"></br>
+        	<label for="emailInput">E-Mail:</label>
+        	<input type="text" name="emailInput" placeholder="example@example.com"></br>
+        	<label for="passwordInput">Password:</label>
+        	<input type="password" name="passwordInput" placeholder="ThisIsVerySecure"></br>
+        	<label for="confirmPasswordInput">Confirm Password:</label>
+        	<input type="password" name="confirmPasswordInput" placeholder="ThisIsVerySecure"></br>
+        	<input type="submit" value="Register">
+    	</form>
+		<p>Already have an Account? <a href="login">Login</a></p>
+		<script src="node_modules/socket.io-client/dist/socket.io.js"></script>
+    	<script src="build/register.js"></script>
+	</body>
+</html>

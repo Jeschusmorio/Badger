@@ -31,16 +31,21 @@ $(function () {
     //hier wird die Seite geladen =>
     //Nutzer bekommt ein zufälliges Account beim Laden (zum Testen)
     //ownUserID = getRandomUserID(4);
-    ownUserID = 1;
-    //eigenes Profil vom Server anfragen und darstellen (oben links)
-    socket.emit("requestOwnProfile", ownUserID);
+    socket.on("setOwnUserID", (clientUserID) => {
+        ownUserID = clientUserID;
+        //eigenes Profil vom Server anfragen (oben links)
+        socket.emit("requestOwnProfile", ownUserID);
+        //Kontakte vom Server anfragen
+        socket.emit("requestContacts", ownUserID);
+    });
+    
+    //Eigenes Profil darstellen (oben links)
     socket.on("loadOwnProfile", (ownUser) => {
         let htmlString = getUserHTMLString(ownUser);
         $("#ownUser").append(htmlString);
     });
 
-    //Kontakte vom Server anfragen und darstellen
-    socket.emit("requestContacts", ownUserID);
+    //Kontakte darstellen
     socket.on("loadContacts", (contactUsers) => {
         contactUsers.forEach(contactUser => {
             let htmlString =    "<div class=\"profile contact\" id=\"" + contactUser[0].userID + "\">" + 
