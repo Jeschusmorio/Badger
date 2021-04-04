@@ -54,6 +54,11 @@ class Database {
         "(" + contactID + ", " + userID + ", '" + message + "');";
     this.updateQuery(query);
   }
+  insertContact(userID1, userID2) {
+    let query = "insert into contact (userID1, userID2) values " + 
+        "(" + userID1 + ", " + userID2 + ");";
+    this.updateQuery(query);
+  }
   showTables(callback) {
     let query = "show tables;";
     this.selectQuery(query, (err, result) => {
@@ -109,7 +114,7 @@ class Database {
         //userIDs aufgerufen wurde, liegt tatsächlich kein Kontakt zwischen den beiden Usern vor
         else {
           console.log("Kein Kontakt zwischen den 2 Nutzern!");
-          return;
+          callback(-1); //unlogischer Wert (-1) wird returned, wenn kein Kontakt vorliegt
         }
       }
 
@@ -119,6 +124,7 @@ class Database {
       }
     });
   }
+  //liefert einen Array mit allen Kontakten, mit denen die mitgegebene UserID in Verbindung steht
   getContactUserIDs(userID, callback) {
     let query = "select userID1, userID2 from contact where userID1 = " + userID + " or userID2 = " + userID + ";";
     this.selectQuery(query, (result) => {
@@ -140,6 +146,15 @@ class Database {
     let query = "select userID, username, profilePicture from user where userID = " + userID + ";";
     this.selectQuery(query, (result) => {
       callback(result);
+    });
+  }
+  //liefert true, wenn es einen user mit der mitgegebenen userID gibt, ansonsten false
+  userIDExists(userID, callback) {
+    let query = "select count(*) as numberOfUsers from user where userID = " + userID + ";";
+    this.selectQuery(query, (result) => {
+      //wenn die Anzahl der user mit der angegebenen UserID 1 beträgt existiert dieser User -> true
+      //ansonsten (bei 0) existiert dieser User nicht -> false
+      callback(result[0].numberOfUsers == 1);
     });
   }
 }
@@ -194,15 +209,17 @@ io.on("connect", (socket) => {
     //letzten Chatroom verlassen
     socket.leave(currentContactID);
     db.getCertainContactID(ownUserID, chatPartnerUserID, 2, (contactID) => {
-      //neuen Chatroom betreten
-      socket.join(contactID);
-      db.selectMessages(contactID, (messages) => {
-        //user-Objekt des Chatpartners abfragen
-        db.getUserByID(chatPartnerUserID, (chatPartner) => {
-          //der Chatverlauf wird für den Nutzer der den Kontakt auswählt angezeigt
-          socket.emit("showChatHistory", messages, contactID, chatPartner);
+      if (contactID != -1) {
+        //neuen Chatroom betreten
+        socket.join(contactID);
+        db.selectMessages(contactID, (messages) => {
+          //user-Objekt des Chatpartners abfragen
+          db.getUserByID(chatPartnerUserID, (chatPartner) => {
+            //der Chatverlauf wird für den Nutzer der den Kontakt auswählt angezeigt
+            socket.emit("showChatHistory", messages, contactID, chatPartner);
+          });
         });
-      });
+      }
     });
   });
 
@@ -238,6 +255,40 @@ io.on("connect", (socket) => {
   socket.on("removeFriend", (contactID) => {
     db.deleteContact(contactID, () => {
       socket.emit("reloadPage");
+    });
+  });
+  socket.on("addFriend", (ownUserID, friendID) => {
+    //überprüfen, ob die friendID in der Datenbank existiert
+    db.userIDExists(friendID, (userExists) => {
+      //falls nicht: fehlermeldung
+      if (!userExists) {
+        socket.emit("alertErrorMsg", "There is no User with the ID: " + friendID + "!");
+      }
+      //falls ja, überprüfen ob der User seine eigene UserID eingegeben hat
+      else {
+        if (ownUserID == friendID) {
+          socket.emit("alertErrorMsg", "You can't befriend yourself! (" + friendID + " is your own UserID)");
+        }
+        //falls nicht, überprüfen, ob die beiden User schon in Kontakt stehen
+        else {
+          db.getCertainContactID(ownUserID, friendID, 2, (contactID) => {
+            //wenn die beiden User schon in Kontakt stehen (also nicht -1 returned wird),
+            //kommt es zu einer Fehlermeldung
+            if (contactID != -1) {
+              socket.emit("alertErrorMsg", "You're already friends with that person!");
+            }
+            //wenn die beiden User noch nicht in Kontakt stehen
+            //wird ein Datenbankeintrag erstellt und die Seite reloaded
+            else {
+              //dieser Fall tritt also nur auf, wenn ein User mit der friendID in der Datenbank existiert,
+              //es sich dabei nicht um die eigene UserID handelt
+              //und die beiden Nutzer noch nicht in Kontakt stehen
+              db.insertContact(ownUserID, friendID);
+              socket.emit("reloadPage");
+            }
+          });
+        }
+      }
     });
   });
 });

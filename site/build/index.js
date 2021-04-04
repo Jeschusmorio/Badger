@@ -89,6 +89,19 @@ $(function () {
         }
     });
     $(document).on("click", ".addFriend", function (eventHandler) {
+        eventHandler.preventDefault();
+        //Pop-Up in dem die UserID des gewünschten Partners eingegeben werden soll
+        let friendIDInput = prompt("Please enter the UserID of the person you want to add (number behind the #)!", "");
+        //EingabeString wird in eine Nummer umgewandelt
+        let friendID = parseInt(friendIDInput);
+        //überprüfen ob die eingegebene friendID eine Nummer ist
+        //wenn nicht erscheint einer Fehlermeldung, ansonsten wird die ID an den Server gegeben
+        if (isNaN(friendID)) {
+            alert("'" + friendIDInput + "' is not a valid UserID! Please enter a valid UserID!");
+        }
+        else {
+            socket.emit("addFriend", ownUserID, friendID);
+        }
     });
     $(document).on("click", ".removeFriend", function (eventHandler) {
         eventHandler.preventDefault();
@@ -98,6 +111,9 @@ $(function () {
     });
     socket.on("reloadPage", () => {
         location.reload();
+    });
+    socket.on("alertErrorMsg", (errorMsg) => {
+        alert(errorMsg);
     });
 });
 //# sourceMappingURL=index.js.map
